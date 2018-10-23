@@ -15,6 +15,9 @@ Exceptions are logged in a table storage account for historical debugging.
 ## Stripe Webhook Documentation
 https://stripe.com/docs/webhooks
 
+### Testing your webhooks
+![Testing WEbhooks](https://github.com/INNVTV/Stripe-Webhook/blob/master/_docs/imgs/stripe-test-webhook.png)
+
 ## Stripe.net Package Documentation
 Uses Stripe.net official C# SDK: https://github.com/stripe/stripe-dotnet
 
