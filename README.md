@@ -7,6 +7,9 @@ Messages are sent to a queue for background processes to pick up and take action
 ## Azure Focused
 Azure storage queues are built into the template. Can be replaced with a messaging system of your choice.
 
+## Exceptions
+Exceptions are logged in a table storage account for historical debugging.
+
 ## Stripe Webhook Documentation
 https://stripe.com/docs/webhooks
 
