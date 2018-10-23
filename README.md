@@ -1,3 +1,5 @@
+[![Build Status](https://dev.azure.com/Github-Samples/Stripe-Webhook/_apis/build/status/INNVTV.Stripe-Webhook)](https://dev.azure.com/Github-Samples/Stripe-Webhook/_build/latest?definitionId=2)
+
 # Stripe Webhook
 A template for developing Stripe webhooks to take actions on your customer data from Stripe events.
 
