@@ -23,6 +23,7 @@ namespace StripeWebhook.Controllers
 
                 // Ensure idempotency (Has this already been logged?)
 
+                // We only focus on the events we care about, the remainder are logged for future reference:
                 switch(stripeEvent.Type)
                 {
                     case "invoice.payment_succeeded":
@@ -33,7 +34,9 @@ namespace StripeWebhook.Controllers
                         break;
                 }
 
-                // Log into message queue:
+                // Send into message queue:
+
+                // Log processing of this event: 
 
                 // Return status code 200
                 return Ok();
