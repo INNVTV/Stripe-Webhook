@@ -1,3 +1,4 @@
+using System;
 using Microsoft.WindowsAzure.Storage.Table;
 
 namespace StripeWebhook.TableEntities
@@ -6,7 +7,7 @@ namespace StripeWebhook.TableEntities
     {
         public EventLogEntity(string Id)
         {
-            this.PartitionKey = RowKey = string.Format("{0:d19}+{1}", DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks, Guid.NewGuid().ToString("N"));
+            this.PartitionKey = string.Format("{0:d19}+{1}", DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks, Guid.NewGuid().ToString("N"));
             this.RowKey= "";
         }
 
