@@ -6,11 +6,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using StripeWebhook.Models;
+using StripeWebhook.TableEntities;
 using Microsoft.WindowsAzure.Storage; 
 using Microsoft.WindowsAzure.Storage.Queue;
 using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Microsoft.AspNetCore.Http;
 
 namespace StripeWebhook.Controllers
 {
@@ -21,14 +23,19 @@ namespace StripeWebhook.Controllers
 
         // POST api/values
         [HttpPost]
-        public ActionResult Post(Stripe.Event stripeEvent)
+        public ActionResult Post(HttpContext httpContext)
         {
             // Connect to storage
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(AppSettings.ConnectionString);
 
             try{
 
-                // Connect to Queue
+                // Unpack the Stripe Event
+                var json = new StreamReader(httpContext.Request.Body).ReadToEndAsync().Result;
+                var stripeEvent = Stripe.EventUtility.ParseEvent(json);
+
+
+                // Connect to Message Queue
                 CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
                 CloudQueue queue = queueClient.GetQueueReference(AppSettings.QueueName);
                 queue.CreateIfNotExistsAsync();
@@ -39,13 +46,6 @@ namespace StripeWebhook.Controllers
                 logsTable.CreateIfNotExistsAsync();
 
 
-
-                //var json = new StreamReader(Request.InputStream).ReadToEnd();
-
-                // Unpack the stripe event
-                //var stripeEvent. = Stripe.EventUtility.ParseEvent();
-
-
                 //string stripeEventId = stripeEvent.Type = EventUtility.;
 
                 // Ensure idempotency (Has this already been logged?)
@@ -54,10 +54,11 @@ namespace StripeWebhook.Controllers
                 // We only focus on the events we care about, the remainder are logged for future reference:
                 switch(stripeEvent.Type)
                 {
-                    //case StripeEvents.
-                    case "invoice.payment_succeeded":
+                    case Stripe.Events.CustomerCreated:
                         break;
-                    case "invoice...d":
+                    case Stripe.Events.ChargeSucceeded:
+                        break;
+                    case Stripe.Events.ChargeFailed:
                         break;
                     default:
                         break;
@@ -66,7 +67,7 @@ namespace StripeWebhook.Controllers
                 // Send into message queue:
                 // Create a message and add it to the queue.
                     var queueMessage = new QueueMessage{
-                        Id = ""
+                        Id = stripeEvent.Id,
                     };
 
                     var messageAsJson = JsonConvert.SerializeObject(queueMessage);
