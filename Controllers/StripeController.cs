@@ -23,7 +23,7 @@ namespace StripeWebhook.Controllers
 
         // POST api/values
         [HttpPost]
-        public ActionResult Post(HttpContext httpContext)
+        public ActionResult Post()
         {
             // Connect to storage
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(AppSettings.ConnectionString);
@@ -31,7 +31,7 @@ namespace StripeWebhook.Controllers
             try{
 
                 // Unpack the Stripe Event
-                var json = new StreamReader(httpContext.Request.Body).ReadToEndAsync().Result;
+                var json = new StreamReader(HttpContext.Request.Body).ReadToEndAsync().Result;
                 var stripeEvent = Stripe.EventUtility.ParseEvent(json);
 
 
