@@ -54,6 +54,8 @@ namespace StripeWebhook.Controllers
                 // We only focus on the events we care about, the remainder are logged for future reference:
                 switch(stripeEvent.Type)
                 {
+                    // Handle Stripe events based on type:
+
                     case Stripe.Events.CustomerCreated:
                         break;
                     case Stripe.Events.ChargeSucceeded:
@@ -68,6 +70,7 @@ namespace StripeWebhook.Controllers
                 // Create a message and add it to the queue.
                     var queueMessage = new QueueMessage{
                         Id = stripeEvent.Id,
+                        Type = stripeEvent.Type
                     };
 
                     var messageAsJson = JsonConvert.SerializeObject(queueMessage);
@@ -75,7 +78,8 @@ namespace StripeWebhook.Controllers
                     queue.AddMessageAsync(message);
 
                 // Log processing of this event: 
-                var eventLogEntity = new EventLogEntity("");
+                var eventLogEntity = new EventLogEntity(stripeEvent.Id);
+                eventLogEntity.Type = stripeEvent.Type;
                 TableOperation insertOperation = TableOperation.Insert(eventLogEntity);
                 logsTable.ExecuteAsync(insertOperation);
 
@@ -91,7 +95,7 @@ namespace StripeWebhook.Controllers
                 exceptionsTable.CreateIfNotExistsAsync();
 
                 // Log the exception:
-                var exceptionLogEntity = new ExceptionLogEntity(""){
+                var exceptionLogEntity = new ExceptionLogEntity(){
                         Message = e.Message
                     };
                 TableOperation insertOperation = TableOperation.Insert(exceptionLogEntity);

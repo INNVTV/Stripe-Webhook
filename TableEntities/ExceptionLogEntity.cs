@@ -5,13 +5,12 @@ namespace StripeWebhook.TableEntities
 {
     public class ExceptionLogEntity : TableEntity
     {
-        public ExceptionLogEntity(string rowKey)
+        public ExceptionLogEntity()
         {
             this.PartitionKey = string.Format("{0:d19}+{1}", DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks, Guid.NewGuid().ToString("N"));
-            this.RowKey= rowKey;
+            this.RowKey= Guid.NewGuid().ToString();
         }
 
-        public ExceptionLogEntity() { }
 
         public string Message;
     }
