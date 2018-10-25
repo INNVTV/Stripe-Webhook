@@ -20,12 +20,10 @@ namespace StripeWebhook.Controllers
     [ApiController]
     public class StripeController : ControllerBase
     {
-
-        // POST api/values
         [HttpPost]
         public ActionResult Post()
         {
-            // Connect to storage
+            // Prepare connection to storage account
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(AppSettings.ConnectionString);
 
             try{
@@ -33,7 +31,6 @@ namespace StripeWebhook.Controllers
                 // Unpack the Stripe Event
                 var json = new StreamReader(HttpContext.Request.Body).ReadToEndAsync().Result;
                 var stripeEvent = Stripe.EventUtility.ParseEvent(json);
-
 
                 // Connect to Message Queue
                 CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
@@ -45,11 +42,8 @@ namespace StripeWebhook.Controllers
                 CloudTable logsTable = logsTableClient.GetTableReference(AppSettings.StripeEventLogTableName);
                 logsTable.CreateIfNotExistsAsync();
 
-
-                //string stripeEventId = stripeEvent.Type = EventUtility.;
-
                 // Ensure idempotency (Has this already been logged?)
-                //https://stripe.com/docs/api/idempotent_requests?lang=curl
+                // ToDo: Check LogsTable, Ignore events that have already been processed...
 
                 // We only focus on the events we care about, the remainder are logged for future reference:
                 switch(stripeEvent.Type)
@@ -57,12 +51,16 @@ namespace StripeWebhook.Controllers
                     // Handle Stripe events based on type:
 
                     case Stripe.Events.CustomerCreated:
+                        // Process CustomerCreated Event...
                         break;
                     case Stripe.Events.ChargeSucceeded:
+                        // Process ChargeSucceeded Event...
                         break;
                     case Stripe.Events.ChargeFailed:
+                        // Process ChargeFailed Event...
                         break;
                     default:
+                        // Process Default Event...
                         break;
                 }
 
@@ -100,7 +98,6 @@ namespace StripeWebhook.Controllers
                     };
                 TableOperation insertOperation = TableOperation.Insert(exceptionLogEntity);
                 exceptionsTable.ExecuteAsync(insertOperation);
-
 
                 // Return status code 400:
                 return BadRequest();
